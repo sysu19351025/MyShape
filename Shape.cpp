@@ -107,38 +107,35 @@ void Polygon::Print() const {
 		edges_.at(i)->Print();
 		cout << endl;
 	}
-	cout << "\nC = " << Circumference() << "\nS = " << Area() << endl;
+	cout << "C = " << Circumference() << "\nS = " << Area() << endl;
 }
 
 // operator reload
 shared_ptr<Shape> operator |(const shared_ptr<Shape>& s1, const shared_ptr<Shape>& s2) {
-	if (typeid(s1) == typeid(s2)) {
-
-		if (typeid(s1) == typeid(shared_ptr<Circle>)) {
-			Circle c1 = *(dynamic_pointer_cast<Circle>(s1)), c2 = *(dynamic_pointer_cast<Circle>(s2));
-			double dist = sqrt((c1.CtrX() - c2.CtrX()) * (c1.CtrX() - c2.CtrX()) + (c1.CtrY() - c2.CtrY()) * (c1.CtrY() - c2.CtrY()));
-			double Rmax = c1.R() > c2.R() ? c1.R() : c2.R();
-			double Rmin = c1.R() < c2.R() ? c1.R() : c2.R();
-			if (dist >= Rmax + Rmin) {	// Both of c1 & c2
-				shared_ptr<CompositeSp> p(new CompositeSp(c1.Circumference() + c2.Circumference(), c1.Area() + c2.Area()));
-				return p;
-			}
-			if (dist <= Rmax - Rmin) {	// the larger circle
-				shared_ptr<Circle> p(new Circle(c1.R() == Rmax ? c1 : c2));
-				return p;
-			}
-			double Amin = 2 * acos((Rmin * Rmin + dist * dist - Rmax * Rmax) / (2 * Rmin * dist));
-			double Amax = 2 * acos((Rmax * Rmax + dist * dist - Rmin * Rmin) / (2 * Rmax * dist));
-			double C = c1.Circumference() + c2.Circumference() - (Amin * Rmin + Amax * Rmax);
-			double S = c1.Area() + c2.Area() - (Amin - sin(Amin)) * Rmin * Rmin / 2 - (Amax - sin(Amax) * Rmax * Rmax / 2);
-			shared_ptr<CompositeSp> p(new CompositeSp(C,S));
+	if (dynamic_pointer_cast<Circle>(s1) && dynamic_pointer_cast<Circle>(s2)) {
+		Circle c1 = *(dynamic_pointer_cast<Circle>(s1)), c2 = *(dynamic_pointer_cast<Circle>(s2));
+		double dist = sqrt((c1.CtrX() - c2.CtrX()) * (c1.CtrX() - c2.CtrX()) + (c1.CtrY() - c2.CtrY()) * (c1.CtrY() - c2.CtrY()));
+		double Rmax = c1.R() > c2.R() ? c1.R() : c2.R();
+		double Rmin = c1.R() < c2.R() ? c1.R() : c2.R();
+		if (dist >= Rmax + Rmin) {	// Both of c1 & c2
+			shared_ptr<CompositeSp> p(new CompositeSp(c1.Circumference() + c2.Circumference(), c1.Area() + c2.Area()));
 			return p;
 		}
-
-		if (typeid(s1) == typeid(shared_ptr<Polygon>)) {
-			shared_ptr<Polygon> p(new Polygon(*(dynamic_pointer_cast<Polygon>(s1)) | *s2));
+		if (dist <= Rmax - Rmin) {	// the larger circle
+			shared_ptr<Circle> p(new Circle(c1.R() == Rmax ? c1 : c2));
 			return p;
 		}
+		double Amin = 2 * acos((Rmin * Rmin + dist * dist - Rmax * Rmax) / (2 * Rmin * dist));
+		double Amax = 2 * acos((Rmax * Rmax + dist * dist - Rmin * Rmin) / (2 * Rmax * dist));
+		double C = c1.Circumference() + c2.Circumference() - (Amin * Rmin + Amax * Rmax);
+		double S = c1.Area() + c2.Area() - (Amin - sin(Amin)) * Rmin * Rmin / 2 - (Amax - sin(Amax)) * Rmax * Rmax / 2;
+		shared_ptr<CompositeSp> p(new CompositeSp(C,S));
+		return p;
+	}
+
+	if (dynamic_pointer_cast<Polygon>(s1) && dynamic_pointer_cast<Polygon>(s2)) {
+		shared_ptr<Polygon> p(new Polygon(*(dynamic_pointer_cast<Polygon>(s1)) | *s2));
+		return p;
 	}
 
 	// calculate omitted
@@ -146,33 +143,30 @@ shared_ptr<Shape> operator |(const shared_ptr<Shape>& s1, const shared_ptr<Shape
 	return p;
 }
 shared_ptr<Shape> operator &(const shared_ptr<Shape>& s1, const shared_ptr<Shape>& s2) {
-	if (typeid(s1) == typeid(s2)) {
-
-		if (typeid(s1) == typeid(shared_ptr<Circle>)) {
-			Circle c1 = *(dynamic_pointer_cast<Circle>(s1)), c2 = *(dynamic_pointer_cast<Circle>(s2));
-			double dist = sqrt((c1.CtrX() - c2.CtrX()) * (c1.CtrX() - c2.CtrX()) + (c1.CtrY() - c2.CtrY()) * (c1.CtrY() - c2.CtrY()));
-			double Rmax = c1.R() > c2.R() ? c1.R() : c2.R();
-			double Rmin = c1.R() < c2.R() ? c1.R() : c2.R();
-			if (dist >= Rmax + Rmin) {	// empty set
-				shared_ptr<CompositeSp> p(new CompositeSp());
-				return p;
-			}
-			if (dist <= Rmax - Rmin) {	// the smaller circle
-				shared_ptr<Circle> p(new Circle(c1.R() == Rmin ? c1 : c2));
-				return p;
-			}
-			double Amin = 2 * acos((Rmin * Rmin + dist * dist - Rmax * Rmax) / (2 * Rmin * dist));
-			double Amax = 2 * acos((Rmax * Rmax + dist * dist - Rmin * Rmin) / (2 * Rmax * dist));
-			double C = Amin * Rmin + Amax * Rmax;
-			double S = (Amin - sin(Amin)) * Rmin * Rmin / 2 + (Amax - sin(Amax) * Rmax * Rmax / 2);
-			shared_ptr<CompositeSp> p(new CompositeSp(C, S));
+	if (dynamic_pointer_cast<Circle>(s1) && dynamic_pointer_cast<Circle>(s2)) {
+		Circle c1 = *(dynamic_pointer_cast<Circle>(s1)), c2 = *(dynamic_pointer_cast<Circle>(s2));
+		double dist = sqrt((c1.CtrX() - c2.CtrX()) * (c1.CtrX() - c2.CtrX()) + (c1.CtrY() - c2.CtrY()) * (c1.CtrY() - c2.CtrY()));
+		double Rmax = c1.R() > c2.R() ? c1.R() : c2.R();
+		double Rmin = c1.R() < c2.R() ? c1.R() : c2.R();
+		if (dist >= Rmax + Rmin) {	// empty set
+			shared_ptr<CompositeSp> p(new CompositeSp());
 			return p;
 		}
-
-		if (typeid(s1) == typeid(shared_ptr<Polygon>)) {
-			shared_ptr<Polygon> p(new Polygon(*(dynamic_pointer_cast<Polygon>(s1)) & *s2));
+		if (dist <= Rmax - Rmin) {	// the smaller circle
+			shared_ptr<Circle> p(new Circle(c1.R() == Rmin ? c1 : c2));
 			return p;
 		}
+		double Amin = 2 * acos((Rmin * Rmin + dist * dist - Rmax * Rmax) / (2 * Rmin * dist));
+		double Amax = 2 * acos((Rmax * Rmax + dist * dist - Rmin * Rmin) / (2 * Rmax * dist));
+		double C = Amin * Rmin + Amax * Rmax;
+		double S = (Amin - sin(Amin)) * Rmin * Rmin / 2 + (Amax - sin(Amax)) * Rmax * Rmax / 2;
+		shared_ptr<CompositeSp> p(new CompositeSp(C, S));
+		return p;
+	}
+
+	if (dynamic_pointer_cast<Polygon>(s1) && dynamic_pointer_cast<Polygon>(s2)) {
+		shared_ptr<Polygon> p(new Polygon(*(dynamic_pointer_cast<Polygon>(s1)) & *s2));
+		return p;
 	}
 	
 	// calculate omitted

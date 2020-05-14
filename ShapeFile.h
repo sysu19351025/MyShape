@@ -6,14 +6,14 @@
 #include <vector>
 
 class Shape;
-class ShapeFile
-{
+class ShapeFile{
 public:
 	ShapeFile(std::ifstream& sf);
-	void Generate();
-	void Print();
+	void Print() const;
 
 private:
+	void Generate();	// called only once by the constructor
+
 	std::vector<std::shared_ptr<Shape>> shapes_;
 	std::vector<std::shared_ptr<Shape>> compositeShapes_;
 };

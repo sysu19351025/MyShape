@@ -1,0 +1,40 @@
+------Shapes------
+---Circle---
+Center:(4,2) R = 2 Area = 12.5664
+
+---Circle---
+Center:(1,2) R = 2 Area = 12.5664
+
+---Polygon---
+Edges:
+Edge1:P1:(1,2) P2:(3,2)
+Edge2:P1:(3,2) P2:(3,4)
+Edge3:P1:(3,4) P2:(1,2)
+C = 6.82843
+S = 2
+
+---Polygon---
+Edges:
+Edge1:P1:(2,2) P2:(4,2)
+Edge2:P1:(4,2) P2:(4,3)
+Edge3:P1:(4,3) P2:(3,3)
+Edge4:P1:(3,3) P2:(2,2)
+C = 5.41421
+S = 1.5
+
+---Polygon---
+Edges:
+Edge1:P1:(3,2) P2:(4,2)
+Edge2:P1:(4,2) P2:(5,6)
+Edge3:P1:(5,6) P2:(3,4)
+Edge4:P1:(3,4) P2:(3,2)
+C = 9.95153
+S = 4
+
+------Composite Shapes------
+---Odd Shape---
+c = 19.3509     s = 23.3195
+
+---Odd Shape---
+c = 5.78187     s = 1.81325
+

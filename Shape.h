@@ -15,7 +15,7 @@ public:
 	static const int UnknownValue = -1;
 };
 std::shared_ptr<Shape> operator |(const std::shared_ptr<Shape>& s1, const std::shared_ptr<Shape>& s2);
-std::shared_ptr<Shape> operator |(const std::shared_ptr<Shape>& s1, const std::shared_ptr<Shape>& s2);
+std::shared_ptr<Shape> operator &(const std::shared_ptr<Shape>& s1, const std::shared_ptr<Shape>& s2);
 
 class CompositeSp :public Shape {
 	double circ_ = UnknownValue, area_ = UnknownValue;
@@ -32,7 +32,7 @@ class Circle :public Shape {
 	Point center_;
 	double radius_;
 public:
-	Circle():radius_(0),center_(Point(0,0)) {}
+	Circle():radius_(UnknownValue),center_(Point(0,0)) {}
 	Circle(Point p,double r);
 	~Circle(){}
 	double CtrX() { return center_.x_; }
@@ -42,8 +42,7 @@ public:
 	virtual double Area() const override;
 	virtual void Print() const override;
 	virtual bool IsValid() const override {
-		return radius_ >= 0;
-	}
+		return radius_ >= 0; }
 };
 
 class Polygon :public Shape {
